@@ -70,10 +70,12 @@ User requested 10 "innovation" ideas. Brutal scoping call made and stated upfron
 - Deferred to roadmap, NOT built (stated upfront, not silently dropped): barcode/camera scanner, warehouse digital map + product locator, auto transfer suggestions between locations — all high-effort/high-demo-risk for time remaining
 - Commit: `1d2a4be`
 
-### 3:30–4:00 — Auth flow
-- [ ] Confirm signup/login works (Odoo native)
-- [ ] Add password reset — real OTP if time allows (simple model: generate code, show in a controller/log for demo, verify, reset password); otherwise fall back to Odoo's built-in email reset and say "OTP" in the video is the code emailed
-- [ ] Commit: "auth + password reset"
+### Phase 5 — Auth flow ✅ DONE
+- [x] Signup/login confirmed working (Odoo native, `auth_signup`)
+- [x] Real OTP password reset built: `stocksense.otp` model (6-digit code, single-use, 10-min expiry), public controller at `/stocksense/forgot`, hooked into the actual login page's "Reset Password" link via QWeb template inheritance (not a guess — found and overrode the real `auth_signup.login` template)
+- [x] OTP delivery is mocked (shown on-screen, clearly labeled "demo mode") since no SMS/email provider is configured — the OTP mechanism itself (generation/verification/expiry/single-use) is real
+- [x] Verified end-to-end via curl: request → correct OTP returned → submit OTP+new password → reset succeeds → new password authenticates → old password rejected → reusing the same OTP correctly rejected
+- [x] Commit: `eea625b`
 
 ### 4:00–4:30 — Branding & polish
 - [ ] Relabel menus to match PS navigation: Products / Operations (Receipts, Delivery, Adjustment, Move History, Dashboard) / Settings → Warehouse / Profile
