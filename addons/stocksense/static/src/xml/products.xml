@@ -5,6 +5,9 @@
       <div class="ss-page-header">
         <h2><i class="fa fa-cubes"/> Product Intelligence</h2>
         <div class="ss-header-actions">
+          <button class="ss-btn ss-btn-primary" t-on-click="() => this.openAddProduct()">
+            <i class="fa fa-plus"/> New Product
+          </button>
           <button class="ss-btn ss-btn-outline" t-on-click="() => this.openScanner()">
             <i class="fa fa-camera"/> Scan Barcode
           </button>
@@ -13,10 +16,86 @@
             <t t-if="state.showLayout">Hide Warehouse Layout</t>
             <t t-else="">Warehouse Layout</t>
           </button>
-          <button class="ss-btn ss-btn-primary" t-on-click="() => this.toggleSummary()">
+          <button class="ss-btn ss-btn-outline" t-on-click="() => this.toggleSummary()">
             <i class="fa fa-calendar"/>
             <t t-if="state.showSummary">Hide Daily Summary</t>
             <t t-else="">Daily Summary</t>
+          </button>
+        </div>
+      </div>
+
+      <div t-if="state.showAddProduct" class="ss-modal-overlay">
+        <div class="ss-modal">
+          <div class="ss-panel-header">
+            <h4><i class="fa fa-plus"/> New Product</h4>
+            <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.closeAddProduct()">Close</button>
+          </div>
+
+          <p t-if="state.addError" class="ss-badge ss-badge-danger mb-2" style="display:block; white-space:normal;">
+            <t t-esc="state.addError"/>
+          </p>
+
+          <div class="mb-2">
+            <label class="ss-hint">Product Name *</label>
+            <input type="text" class="ss-input" style="width:100%;" t-att-value="state.newProduct.name"
+                   t-on-input="(ev) => this.onNewProductField('name', ev)"/>
+          </div>
+
+          <div class="d-flex mb-2" style="gap: 8px;">
+            <div style="flex:1;">
+              <label class="ss-hint">SKU</label>
+              <input type="text" class="ss-input" style="width:100%;" t-att-value="state.newProduct.sku"
+                     t-on-input="(ev) => this.onNewProductField('sku', ev)"/>
+            </div>
+            <div style="flex:1;">
+              <label class="ss-hint">Barcode</label>
+              <input type="text" class="ss-input" style="width:100%;" t-att-value="state.newProduct.barcode"
+                     t-on-input="(ev) => this.onNewProductField('barcode', ev)"/>
+            </div>
+          </div>
+
+          <div class="d-flex mb-2" style="gap: 8px;">
+            <div style="flex:1;">
+              <label class="ss-hint">Category</label>
+              <select class="ss-select" style="width:100%;" t-on-change="(ev) => this.onNewProductField('category_id', ev)">
+                <option value="">Select category...</option>
+                <t t-foreach="state.categories" t-as="cat" t-key="cat.id">
+                  <option t-att-value="cat.id" t-esc="cat.name"/>
+                </t>
+              </select>
+            </div>
+            <div style="flex:1;">
+              <label class="ss-hint">Unit of Measure</label>
+              <select class="ss-select" style="width:100%;" t-on-change="(ev) => this.onNewProductField('uom_id', ev)">
+                <option value="">Select unit...</option>
+                <t t-foreach="state.uomOptions" t-as="uom" t-key="uom.id">
+                  <option t-att-value="uom.id" t-esc="uom.name"/>
+                </t>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="ss-hint">Sales Price</label>
+            <input type="number" class="ss-input" style="width:100%;" t-att-value="state.newProduct.list_price"
+                   t-on-input="(ev) => this.onNewProductField('list_price', ev)"/>
+          </div>
+
+          <div class="mb-3" style="border-top: 1px solid var(--ss-border); padding-top: 12px;">
+            <label style="display:flex; align-items:center; gap: 8px; cursor:pointer;">
+              <input type="checkbox" t-att-checked="state.newProduct.track_expiry"
+                     t-on-change="(ev) => this.onNewProductField('track_expiry', ev)"/>
+              <span>Track expiry date for this product</span>
+            </label>
+            <div t-if="state.newProduct.track_expiry" class="mt-2">
+              <label class="ss-hint">Expires after (days from receipt)</label>
+              <input type="number" class="ss-input" style="width:100%;" t-att-value="state.newProduct.expiration_days"
+                     t-on-input="(ev) => this.onNewProductField('expiration_days', ev)"/>
+            </div>
+          </div>
+
+          <button class="ss-btn ss-btn-primary" style="width:100%; justify-content:center;" t-on-click="() => this.submitNewProduct()">
+            <i class="fa fa-check"/> Create Product
           </button>
         </div>
       </div>

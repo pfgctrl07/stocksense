@@ -27,6 +27,19 @@ export class StockSenseProducts extends Component {
             scannerSupported: "BarcodeDetector" in window,
             scanStatus: "",
             manualBarcode: "",
+            showAddProduct: false,
+            uomOptions: [],
+            addError: "",
+            newProduct: {
+                name: "",
+                sku: "",
+                barcode: "",
+                category_id: "",
+                uom_id: "",
+                list_price: "",
+                track_expiry: false,
+                expiration_days: 30,
+            },
         });
         this._searchTimeout = null;
         this.videoRef = useRef("scannerVideo");
@@ -227,6 +240,57 @@ export class StockSenseProducts extends Component {
         this.stopScanner();
         this.state.showScanner = false;
         this.state.manualBarcode = "";
+    }
+
+    async openAddProduct() {
+        this.state.addError = "";
+        if (!this.state.uomOptions.length) {
+            this.state.uomOptions = await this.orm.call("stocksense.product_intel", "get_uom_options", []);
+        }
+        this.state.newProduct = {
+            name: "",
+            sku: "",
+            barcode: "",
+            category_id: "",
+            uom_id: "",
+            list_price: "",
+            track_expiry: false,
+            expiration_days: 30,
+        };
+        this.state.showAddProduct = true;
+    }
+
+    closeAddProduct() {
+        this.state.showAddProduct = false;
+    }
+
+    onNewProductField(field, ev) {
+        const value = field === "track_expiry" ? ev.target.checked : ev.target.value;
+        this.state.newProduct[field] = value;
+    }
+
+    async submitNewProduct() {
+        const p = this.state.newProduct;
+        if (!p.name || !p.name.trim()) {
+            this.state.addError = "Product name is required.";
+            return;
+        }
+        try {
+            await this.orm.call("stocksense.product_intel", "create_product", [{
+                name: p.name,
+                sku: p.sku || null,
+                barcode: p.barcode || null,
+                category_id: p.category_id ? parseInt(p.category_id, 10) : null,
+                uom_id: p.uom_id ? parseInt(p.uom_id, 10) : null,
+                list_price: p.list_price ? parseFloat(p.list_price) : 0,
+                track_expiry: p.track_expiry,
+                expiration_days: p.expiration_days ? parseInt(p.expiration_days, 10) : 30,
+            }]);
+            this.state.showAddProduct = false;
+            await this.loadProducts();
+        } catch (e) {
+            this.state.addError = "Could not create product — check the details and try again.";
+        }
     }
 }
 

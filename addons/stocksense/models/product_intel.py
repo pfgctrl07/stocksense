@@ -359,3 +359,37 @@ class StockSenseProductIntel(models.AbstractModel):
                 "reason": reason,
             })
         return suggestions
+
+    @api.model
+    def get_uom_options(self):
+        uoms = self.env["uom.uom"].search([])
+        return [{"id": u.id, "name": u.name} for u in uoms]
+
+    @api.model
+    def create_product(self, vals):
+        """Creates a new product from the StockSense "New Product" form.
+        vals: name, sku, barcode, category_id, uom_id, list_price,
+        track_expiry (bool), expiration_days (int, only used if track_expiry)."""
+        if not vals.get("name"):
+            raise ValueError("Product name is required.")
+
+        product_vals = {
+            "name": vals["name"],
+            "default_code": vals.get("sku") or False,
+            "barcode": vals.get("barcode") or False,
+            "type": "product",
+            "list_price": vals.get("list_price") or 0.0,
+        }
+        if vals.get("category_id"):
+            product_vals["categ_id"] = vals["category_id"]
+        if vals.get("uom_id"):
+            product_vals["uom_id"] = vals["uom_id"]
+            product_vals["uom_po_id"] = vals["uom_id"]
+
+        if vals.get("track_expiry"):
+            product_vals["tracking"] = "lot"
+            product_vals["use_expiration_date"] = True
+            product_vals["expiration_time"] = int(vals.get("expiration_days") or 30)
+
+        template = self.env["product.template"].create(product_vals)
+        return self._product_row(template.product_variant_id)
