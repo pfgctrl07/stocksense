@@ -1,0 +1,55 @@
+<odoo>
+    <!-- Redirect the login page's native "Reset Password" link to our OTP flow -->
+    <template id="login_link_override" inherit_id="auth_signup.login">
+        <xpath expr="//a[@t-attf-href=&quot;/web/reset_password?{{ keep_query() }}&quot;]" position="attributes">
+            <attribute name="t-attf-href">/stocksense/forgot?{{ keep_query() }}</attribute>
+        </xpath>
+    </template>
+
+    <template id="forgot_password_page" name="StockSense OTP Password Reset">
+        <t t-call="web.login_layout">
+            <div t-if="step == 'done'" class="oe_login_form clearfix">
+                <p class="alert alert-success" role="status">Password reset successful. You can now log in.</p>
+                <a href="/web/login" class="btn btn-link btn-sm float-start" role="button">Back to Login</a>
+            </div>
+
+            <form t-if="step == 'request'" class="oe_reset_password_form" role="form" method="post" t-attf-action="/stocksense/forgot/send">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="mb-3 field-login">
+                    <label for="login">Your Email</label>
+                    <input type="text" name="login" id="login" class="form-control" autofocus="autofocus" required="required" autocapitalize="off"/>
+                </div>
+                <p class="alert alert-danger" t-if="error" role="alert"><t t-esc="error"/></p>
+                <div class="clearfix oe_login_buttons d-grid mt-3">
+                    <button type="submit" class="btn btn-primary">Send OTP</button>
+                    <a href="/web/login" class="btn btn-link btn-sm mt-2">Back to Login</a>
+                </div>
+            </form>
+
+            <form t-if="step == 'verify'" class="oe_reset_password_form" role="form" method="post" t-attf-action="/stocksense/forgot/reset">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="login" t-att-value="login"/>
+                <p t-if="demo_otp" class="alert alert-info">
+                    Demo mode: your OTP is <strong t-esc="demo_otp"/> (a real deployment would SMS/email this instead of showing it here).
+                </p>
+                <div class="mb-3 field-code">
+                    <label for="code">Enter OTP</label>
+                    <input type="text" name="code" id="code" class="form-control" autofocus="autofocus" required="required" maxlength="6"/>
+                </div>
+                <div class="mb-3 field-password pt-2">
+                    <label for="password">New Password</label>
+                    <input type="password" name="password" id="password" class="form-control" required="required"/>
+                </div>
+                <div class="mb-3 field-confirm_password">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="required"/>
+                </div>
+                <p class="alert alert-danger" t-if="error" role="alert"><t t-esc="error"/></p>
+                <div class="clearfix oe_login_buttons d-grid mt-3">
+                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                    <a href="/web/login" class="btn btn-link btn-sm mt-2">Back to Login</a>
+                </div>
+            </form>
+        </t>
+    </template>
+</odoo>
