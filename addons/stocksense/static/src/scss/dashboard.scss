@@ -1,139 +1,381 @@
-.stocksense-dashboard {
-    .stocksense-kpi-row {
-        gap: 16px;
+// ============================================================
+// StockSense design system
+// Scoped entirely under .ss-app so it never leaks into the rest
+// of Odoo's backend (Settings, Contacts, native Inventory, etc.)
+// ============================================================
+
+.ss-app {
+    --ss-primary: #4f46e5;
+    --ss-primary-dark: #3730a3;
+    --ss-primary-soft: #eef2ff;
+    --ss-success: #16a34a;
+    --ss-success-soft: #f0fdf4;
+    --ss-warning: #d97706;
+    --ss-warning-soft: #fffbeb;
+    --ss-danger: #dc2626;
+    --ss-danger-soft: #fef2f2;
+    --ss-text: #0f172a;
+    --ss-text-muted: #64748b;
+    --ss-border: #e2e8f0;
+    --ss-bg: #f8fafc;
+    --ss-card: #ffffff;
+    --ss-radius: 10px;
+    --ss-radius-sm: 6px;
+    --ss-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 6px rgba(15, 23, 42, 0.06);
+
+    background: var(--ss-bg);
+    color: var(--ss-text);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 28px 32px;
+    min-height: 100%;
+
+    // ---------- Page header ----------
+    .ss-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 12px;
+
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ss-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .fa {
+                color: var(--ss-primary);
+                font-size: 20px;
+            }
+        }
     }
 
-    .stocksense-kpi-card {
-        background: #1f2a44;
-        color: #ffffff;
-        border-radius: 8px;
-        padding: 16px 24px;
-        min-width: 170px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    .ss-header-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
-    .stocksense-kpi-warning {
-        background: #a3411f;
-    }
-
-    .stocksense-kpi-value {
-        font-size: 28px;
-        font-weight: 700;
-        line-height: 1.2;
-    }
-
-    .stocksense-kpi-label {
+    // ---------- Buttons ----------
+    .ss-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         font-size: 13px;
-        opacity: 0.85;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: var(--ss-radius-sm);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+        white-space: nowrap;
     }
 
-    .stocksense-doc-table {
-        background: #fff;
-    }
-}
-
-.stocksense-products {
-    .stocksense-row-alert {
-        background: #fff3f0;
-    }
-
-    .stocksense-badge-danger {
-        background: #a3411f;
+    .ss-btn-primary {
+        background: var(--ss-primary);
         color: #fff;
-        border-radius: 4px;
-        padding: 2px 8px;
+        &:hover { background: var(--ss-primary-dark); }
+    }
+
+    .ss-btn-outline {
+        background: var(--ss-card);
+        color: var(--ss-text);
+        border-color: var(--ss-border);
+        &:hover { border-color: var(--ss-primary); color: var(--ss-primary); }
+    }
+
+    .ss-btn-success {
+        background: var(--ss-success-soft);
+        color: var(--ss-success);
+        &:hover { background: var(--ss-success); color: #fff; }
+    }
+
+    .ss-btn-warning {
+        background: var(--ss-warning-soft);
+        color: var(--ss-warning);
+        &:hover { background: var(--ss-warning); color: #fff; }
+    }
+
+    .ss-btn-danger {
+        background: var(--ss-danger-soft);
+        color: var(--ss-danger);
+        &:hover { background: var(--ss-danger); color: #fff; }
+    }
+
+    .ss-btn-sm {
+        padding: 5px 10px;
         font-size: 12px;
     }
 
-    .stocksense-badge-ok {
-        background: #e5e5e5;
-        color: #333;
-        border-radius: 4px;
-        padding: 2px 8px;
-        font-size: 12px;
+    .ss-btn:disabled {
+        opacity: .5;
+        cursor: not-allowed;
     }
 
-    .stocksense-suggest {
-        font-size: 12px;
-        color: #a3411f;
-        margin-top: 2px;
-    }
-
-    .stocksense-count-input, .stocksense-qty-input {
-        width: 70px;
-        display: inline-block;
-    }
-
-    .stocksense-diff {
-        font-size: 12px;
-        margin-top: 2px;
-    }
-
-    .stocksense-diff-mismatch {
-        color: #a3411f;
-        font-weight: 700;
-    }
-
-    .stocksense-diff-ok {
-        color: #2f7d3f;
-    }
-
-    .stocksense-actions .btn {
-        margin-left: 4px;
-    }
-
-    .stocksense-timeline-panel, .stocksense-summary-panel {
-        background: #fff;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        padding: 16px;
-    }
-
-    .stocksense-summary-totals {
+    // ---------- KPI cards ----------
+    .ss-kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 16px;
+        margin-bottom: 28px;
     }
 
-    .stocksense-kpi-card {
-        background: #1f2a44;
-        color: #ffffff;
-        border-radius: 8px;
-        padding: 16px 24px;
-        min-width: 170px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    .ss-kpi-card {
+        background: var(--ss-card);
+        border: 1px solid var(--ss-border);
+        border-radius: var(--ss-radius);
+        box-shadow: var(--ss-shadow);
+        padding: 18px 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
     }
 
-    .stocksense-kpi-value {
-        font-size: 28px;
+    .ss-kpi-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ss-primary-soft);
+        color: var(--ss-primary);
+        font-size: 18px;
+    }
+
+    .ss-kpi-card.ss-kpi-alert .ss-kpi-icon {
+        background: var(--ss-danger-soft);
+        color: var(--ss-danger);
+    }
+
+    .ss-kpi-value {
+        font-size: 26px;
         font-weight: 700;
-        line-height: 1.2;
+        line-height: 1.1;
+        color: var(--ss-text);
     }
 
-    .stocksense-kpi-label {
+    .ss-kpi-label {
+        font-size: 12.5px;
+        color: var(--ss-text-muted);
+        margin-top: 2px;
+        font-weight: 500;
+    }
+
+    // ---------- Section cards ----------
+    .ss-card {
+        background: var(--ss-card);
+        border: 1px solid var(--ss-border);
+        border-radius: var(--ss-radius);
+        box-shadow: var(--ss-shadow);
+        padding: 20px 22px;
+        margin-bottom: 24px;
+    }
+
+    .ss-card-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--ss-text);
+
+        .fa { color: var(--ss-primary); }
+    }
+
+    // ---------- Filters / inputs ----------
+    .ss-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .ss-select, .ss-input {
+        border: 1px solid var(--ss-border);
+        border-radius: var(--ss-radius-sm);
+        padding: 8px 12px;
         font-size: 13px;
-        opacity: 0.85;
+        background: var(--ss-card);
+        color: var(--ss-text);
+        transition: border-color .12s ease, box-shadow .12s ease;
+
+        &:focus {
+            outline: none;
+            border-color: var(--ss-primary);
+            box-shadow: 0 0 0 3px var(--ss-primary-soft);
+        }
     }
 
-    .stocksense-scanner-modal {
+    .ss-select {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 32px;
+        cursor: pointer;
+    }
+
+    .ss-search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+
+        .fa {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ss-text-muted);
+            font-size: 13px;
+        }
+
+        .ss-input {
+            width: 100%;
+            padding-left: 34px;
+        }
+    }
+
+    // ---------- Tables ----------
+    .ss-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--ss-text-muted);
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--ss-border);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 12px;
+            border-bottom: 1px solid var(--ss-border);
+            vertical-align: top;
+            font-size: 13.5px;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: var(--ss-bg); }
+
+        tbody tr.ss-row-alert { background: var(--ss-danger-soft); }
+        tbody tr.ss-row-alert:hover { background: #fde8e8; }
+    }
+
+    // ---------- Badges ----------
+    .ss-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .ss-badge-neutral { background: #f1f5f9; color: var(--ss-text-muted); }
+    .ss-badge-primary { background: var(--ss-primary-soft); color: var(--ss-primary); }
+    .ss-badge-success { background: var(--ss-success-soft); color: var(--ss-success); }
+    .ss-badge-warning { background: var(--ss-warning-soft); color: var(--ss-warning); }
+    .ss-badge-danger  { background: var(--ss-danger-soft); color: var(--ss-danger); }
+
+    .ss-hint {
+        font-size: 11.5px;
+        color: var(--ss-text-muted);
+        margin-top: 3px;
+    }
+    .ss-hint-danger { color: var(--ss-danger); }
+    .ss-hint-success { color: var(--ss-success); }
+
+    // ---------- Small qty/count inputs inside table rows ----------
+    .ss-mini-input {
+        width: 64px;
+        padding: 5px 8px;
+        font-size: 12.5px;
+        border: 1px solid var(--ss-border);
+        border-radius: var(--ss-radius-sm);
+        &:focus { outline: none; border-color: var(--ss-primary); }
+    }
+
+    .ss-row-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    // ---------- Timeline / expandable panels ----------
+    .ss-panel {
+        background: var(--ss-card);
+        border: 1px solid var(--ss-border);
+        border-radius: var(--ss-radius);
+        box-shadow: var(--ss-shadow);
+        padding: 20px 22px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .ss-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+
+        h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+
+    // ---------- Scanner modal ----------
+    .ss-modal-overlay {
         position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 1050;
     }
 
-    .stocksense-scanner-box {
-        background: #fff;
-        border-radius: 8px;
-        padding: 20px;
+    .ss-modal {
+        background: var(--ss-card);
+        border-radius: var(--ss-radius);
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
+        padding: 22px;
         width: 480px;
         max-width: 90vw;
     }
 
-    .stocksense-scanner-video {
+    .ss-modal-video {
         width: 100%;
-        border-radius: 6px;
-        background: #000;
+        border-radius: var(--ss-radius-sm);
+        background: #0f172a;
+    }
+
+    // ---------- Empty / muted text ----------
+    .ss-muted { color: var(--ss-text-muted); }
+
+    // ---------- Layout grid for warehouse slots ----------
+    .ss-kpi-row-sm {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 14px;
+        margin-bottom: 16px;
     }
 }

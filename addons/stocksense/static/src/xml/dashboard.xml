@@ -1,83 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <t t-name="stocksense.Dashboard" owl="1">
-    <div class="stocksense-dashboard p-4">
-      <h2 class="mb-3">StockSense Dashboard</h2>
+    <div class="ss-app">
+      <div class="ss-page-header">
+        <h2><i class="fa fa-th-large"/> StockSense Dashboard</h2>
+      </div>
 
-      <div class="d-flex flex-wrap stocksense-kpi-row mb-4">
-        <div class="stocksense-kpi-card">
-          <div class="stocksense-kpi-value" t-esc="state.kpis.total_products_in_stock"/>
-          <div class="stocksense-kpi-label">Total Products in Stock</div>
+      <div class="ss-kpi-row">
+        <div class="ss-kpi-card">
+          <div class="ss-kpi-icon"><i class="fa fa-cubes"/></div>
+          <div>
+            <div class="ss-kpi-value" t-esc="state.kpis.total_products_in_stock"/>
+            <div class="ss-kpi-label">Total Products in Stock</div>
+          </div>
         </div>
-        <div class="stocksense-kpi-card stocksense-kpi-warning">
-          <div class="stocksense-kpi-value" t-esc="state.kpis.low_stock_count"/>
-          <div class="stocksense-kpi-label">Low / Out of Stock</div>
+        <div class="ss-kpi-card ss-kpi-alert">
+          <div class="ss-kpi-icon"><i class="fa fa-exclamation-triangle"/></div>
+          <div>
+            <div class="ss-kpi-value" t-esc="state.kpis.low_stock_count"/>
+            <div class="ss-kpi-label">Low / Out of Stock</div>
+          </div>
         </div>
-        <div class="stocksense-kpi-card">
-          <div class="stocksense-kpi-value" t-esc="state.kpis.pending_receipts"/>
-          <div class="stocksense-kpi-label">Pending Receipts</div>
+        <div class="ss-kpi-card">
+          <div class="ss-kpi-icon"><i class="fa fa-inbox"/></div>
+          <div>
+            <div class="ss-kpi-value" t-esc="state.kpis.pending_receipts"/>
+            <div class="ss-kpi-label">Pending Receipts</div>
+          </div>
         </div>
-        <div class="stocksense-kpi-card">
-          <div class="stocksense-kpi-value" t-esc="state.kpis.pending_deliveries"/>
-          <div class="stocksense-kpi-label">Pending Deliveries</div>
+        <div class="ss-kpi-card">
+          <div class="ss-kpi-icon"><i class="fa fa-truck"/></div>
+          <div>
+            <div class="ss-kpi-value" t-esc="state.kpis.pending_deliveries"/>
+            <div class="ss-kpi-label">Pending Deliveries</div>
+          </div>
         </div>
-        <div class="stocksense-kpi-card">
-          <div class="stocksense-kpi-value" t-esc="state.kpis.internal_transfers"/>
-          <div class="stocksense-kpi-label">Internal Transfers Scheduled</div>
+        <div class="ss-kpi-card">
+          <div class="ss-kpi-icon"><i class="fa fa-exchange"/></div>
+          <div>
+            <div class="ss-kpi-value" t-esc="state.kpis.internal_transfers"/>
+            <div class="ss-kpi-label">Internal Transfers Scheduled</div>
+          </div>
         </div>
       </div>
 
-      <div class="d-flex stocksense-filters mb-3">
-        <select class="form-select me-2" t-on-change="onDocTypeChange">
-          <option value="all">All Document Types</option>
-          <option value="incoming">Receipts</option>
-          <option value="outgoing">Delivery</option>
-          <option value="internal">Internal</option>
-        </select>
-        <select class="form-select me-2" t-on-change="onStatusChange">
-          <option value="all">All Status</option>
-          <option value="draft">Draft</option>
-          <option value="confirmed">Waiting</option>
-          <option value="assigned">Ready</option>
-          <option value="done">Done</option>
-          <option value="cancel">Canceled</option>
-        </select>
-        <select class="form-select me-2" t-on-change="onWarehouseChange">
-          <option value="all">All Warehouses</option>
-          <t t-foreach="state.filterOptions.warehouses" t-as="wh" t-key="wh.id">
-            <option t-att-value="wh.id" t-esc="wh.name"/>
-          </t>
-        </select>
-        <select class="form-select" t-on-change="onCategoryChange">
-          <option value="all">All Categories</option>
-          <t t-foreach="state.filterOptions.categories" t-as="cat" t-key="cat.id">
-            <option t-att-value="cat.id" t-esc="cat.name"/>
-          </t>
-        </select>
-      </div>
+      <div class="ss-card">
+        <div class="ss-card-title"><i class="fa fa-filter"/> Operations</div>
+        <div class="ss-filters">
+          <select class="ss-select" t-on-change="onDocTypeChange">
+            <option value="all">All Document Types</option>
+            <option value="incoming">Receipts</option>
+            <option value="outgoing">Delivery</option>
+            <option value="internal">Internal</option>
+          </select>
+          <select class="ss-select" t-on-change="onStatusChange">
+            <option value="all">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="confirmed">Waiting</option>
+            <option value="assigned">Ready</option>
+            <option value="done">Done</option>
+            <option value="cancel">Canceled</option>
+          </select>
+          <select class="ss-select" t-on-change="onWarehouseChange">
+            <option value="all">All Warehouses</option>
+            <t t-foreach="state.filterOptions.warehouses" t-as="wh" t-key="wh.id">
+              <option t-att-value="wh.id" t-esc="wh.name"/>
+            </t>
+          </select>
+          <select class="ss-select" t-on-change="onCategoryChange">
+            <option value="all">All Categories</option>
+            <t t-foreach="state.filterOptions.categories" t-as="cat" t-key="cat.id">
+              <option t-att-value="cat.id" t-esc="cat.name"/>
+            </t>
+          </select>
+        </div>
 
-      <table class="table table-sm stocksense-doc-table">
-        <thead>
-          <tr>
-            <th>Reference</th>
-            <th>Type</th>
-            <th>Warehouse</th>
-            <th>Status</th>
-            <th>Scheduled</th>
-          </tr>
-        </thead>
-        <tbody>
-          <t t-foreach="state.documents" t-as="doc" t-key="doc.id">
+        <table class="ss-table">
+          <thead>
             <tr>
-              <td t-esc="doc.name"/>
-              <td t-esc="doc.type"/>
-              <td t-esc="doc.warehouse"/>
-              <td t-esc="doc.state"/>
-              <td t-esc="doc.scheduled_date"/>
+              <th>Reference</th>
+              <th>Type</th>
+              <th>Warehouse</th>
+              <th>Status</th>
+              <th>Scheduled</th>
             </tr>
-          </t>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <t t-foreach="state.documents" t-as="doc" t-key="doc.id">
+              <tr>
+                <td t-esc="doc.name"/>
+                <td>
+                  <span class="ss-badge ss-badge-neutral">
+                    <i t-att-class="doc.type === 'incoming' ? 'fa fa-inbox' : doc.type === 'outgoing' ? 'fa fa-truck' : 'fa fa-exchange'"/>
+                    <t t-esc="doc.type"/>
+                  </span>
+                </td>
+                <td t-esc="doc.warehouse"/>
+                <td>
+                  <span t-att-class="'ss-badge ' + (doc.state === 'done' ? 'ss-badge-success' : doc.state === 'cancel' ? 'ss-badge-danger' : doc.state === 'assigned' ? 'ss-badge-primary' : 'ss-badge-neutral')">
+                    <t t-esc="doc.state"/>
+                  </span>
+                </td>
+                <td t-esc="doc.scheduled_date"/>
+              </tr>
+            </t>
+          </tbody>
+        </table>
+      </div>
     </div>
   </t>
 </templates>

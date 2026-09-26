@@ -1,48 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <t t-name="stocksense.Products" owl="1">
-    <div class="stocksense-products p-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Product Intelligence</h2>
-        <div>
-          <button class="btn btn-sm btn-outline-secondary me-2" t-on-click="() => this.openScanner()">
-            Scan Barcode
+    <div class="ss-app">
+      <div class="ss-page-header">
+        <h2><i class="fa fa-cubes"/> Product Intelligence</h2>
+        <div class="ss-header-actions">
+          <button class="ss-btn ss-btn-outline" t-on-click="() => this.openScanner()">
+            <i class="fa fa-camera"/> Scan Barcode
           </button>
-          <button class="btn btn-sm btn-outline-secondary me-2" t-on-click="() => this.toggleLayout()">
+          <button class="ss-btn ss-btn-outline" t-on-click="() => this.toggleLayout()">
+            <i class="fa fa-th"/>
             <t t-if="state.showLayout">Hide Warehouse Layout</t>
             <t t-else="">Warehouse Layout</t>
           </button>
-          <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.toggleSummary()">
+          <button class="ss-btn ss-btn-primary" t-on-click="() => this.toggleSummary()">
+            <i class="fa fa-calendar"/>
             <t t-if="state.showSummary">Hide Daily Summary</t>
             <t t-else="">Daily Summary</t>
           </button>
         </div>
       </div>
 
-      <div t-if="state.showScanner" class="stocksense-scanner-modal">
-        <div class="stocksense-scanner-box">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h4 class="mb-0">Scan Barcode</h4>
-            <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.closeScanner()">Close</button>
+      <div t-if="state.showScanner" class="ss-modal-overlay">
+        <div class="ss-modal">
+          <div class="ss-panel-header">
+            <h4><i class="fa fa-camera"/> Scan Barcode</h4>
+            <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.closeScanner()">Close</button>
           </div>
           <t t-if="state.scannerSupported">
-            <video t-ref="scannerVideo" class="stocksense-scanner-video" autoplay="autoplay" playsinline="playsinline"></video>
+            <video t-ref="scannerVideo" class="ss-modal-video" autoplay="autoplay" playsinline="playsinline"></video>
           </t>
-          <p t-if="state.scanStatus" class="alert alert-info mt-2 py-2"><t t-esc="state.scanStatus"/></p>
-          <div class="mt-2">
-            <label>Camera not working? Enter the barcode manually:</label>
-            <div class="d-flex mt-1">
-              <input type="text" class="form-control me-2" t-att-value="state.manualBarcode"
+          <p t-if="state.scanStatus" class="ss-badge ss-badge-primary mt-2"><t t-esc="state.scanStatus"/></p>
+          <div class="mt-3">
+            <label class="ss-hint">Camera not working? Enter the barcode manually:</label>
+            <div class="d-flex mt-1" style="gap: 8px;">
+              <input type="text" class="ss-input" style="flex: 1;" t-att-value="state.manualBarcode"
                      t-on-input="(ev) => this.onManualBarcodeInput(ev)"/>
-              <button class="btn btn-sm btn-primary" t-on-click="() => this.onManualBarcodeSubmit()">Look up</button>
+              <button class="ss-btn ss-btn-primary" t-on-click="() => this.onManualBarcodeSubmit()">Look up</button>
             </div>
           </div>
         </div>
       </div>
 
-      <div t-if="state.showLayout" class="stocksense-summary-panel mb-4">
-        <h4>Warehouse Layout (X, Y, Height)</h4>
-        <table class="table table-sm">
+      <div t-if="state.showLayout" class="ss-panel">
+        <div class="ss-card-title"><i class="fa fa-th"/> Warehouse Layout (X, Y, Height)</div>
+        <table class="ss-table">
           <thead>
             <tr><th>Slot</th><th>X</th><th>Y</th><th>Height (Z)</th><th>Currently Holding</th></tr>
           </thead>
@@ -54,16 +56,16 @@
                 <td t-esc="slot.y"/>
                 <td t-esc="slot.z"/>
                 <td>
-                  <span t-if="slot.occupant" t-esc="slot.occupant"/>
-                  <span t-else="" class="text-muted">Empty</span>
+                  <span t-if="slot.occupant" class="ss-badge ss-badge-primary" t-esc="slot.occupant"/>
+                  <span t-else="" class="ss-muted">Empty</span>
                 </td>
               </tr>
             </t>
           </tbody>
         </table>
 
-        <h5 class="mt-3">Suggested Optimal Placement</h5>
-        <table class="table table-sm">
+        <div class="ss-card-title mt-4"><i class="fa fa-magic"/> Suggested Optimal Placement</div>
+        <table class="ss-table">
           <thead>
             <tr><th>Product</th><th>Velocity/day</th><th>Current Location</th><th>Suggested Slot</th><th>Reason</th></tr>
           </thead>
@@ -74,26 +76,32 @@
                 <td t-esc="opt.velocity"/>
                 <td t-esc="opt.current_location"/>
                 <td><t t-esc="opt.suggested_slot"/> <t t-esc="opt.suggested_coordinate"/></td>
-                <td><small t-esc="opt.reason"/></td>
+                <td><span class="ss-hint" t-esc="opt.reason"/></td>
               </tr>
             </t>
           </tbody>
         </table>
       </div>
 
-      <div t-if="state.showSummary" class="stocksense-summary-panel mb-4">
-        <h4>Daily Summary — <t t-esc="state.summary.date"/></h4>
-        <div class="d-flex stocksense-summary-totals mb-2">
-          <div class="stocksense-kpi-card">
-            <div class="stocksense-kpi-value" t-esc="state.summary.total_received_today"/>
-            <div class="stocksense-kpi-label">Received Today</div>
+      <div t-if="state.showSummary" class="ss-panel">
+        <div class="ss-card-title"><i class="fa fa-calendar"/> Daily Summary — <t t-esc="state.summary.date"/></div>
+        <div class="ss-kpi-row-sm">
+          <div class="ss-kpi-card">
+            <div class="ss-kpi-icon"><i class="fa fa-arrow-down"/></div>
+            <div>
+              <div class="ss-kpi-value" t-esc="state.summary.total_received_today"/>
+              <div class="ss-kpi-label">Received Today</div>
+            </div>
           </div>
-          <div class="stocksense-kpi-card">
-            <div class="stocksense-kpi-value" t-esc="state.summary.total_delivered_today"/>
-            <div class="stocksense-kpi-label">Delivered Today</div>
+          <div class="ss-kpi-card">
+            <div class="ss-kpi-icon"><i class="fa fa-arrow-up"/></div>
+            <div>
+              <div class="ss-kpi-value" t-esc="state.summary.total_delivered_today"/>
+              <div class="ss-kpi-label">Delivered Today</div>
+            </div>
           </div>
         </div>
-        <table class="table table-sm">
+        <table class="ss-table">
           <thead>
             <tr><th>Product</th><th>Received Today</th><th>Delivered Today</th><th>Current Qty</th><th>Status</th></tr>
           </thead>
@@ -105,9 +113,9 @@
                 <td t-esc="row.delivered_today"/>
                 <td t-esc="row.current_qty"/>
                 <td>
-                  <span t-if="row.stale and row.days_idle === null" class="stocksense-badge-danger">Never moved</span>
-                  <span t-elif="row.stale" class="stocksense-badge-danger">Idle <t t-esc="row.days_idle"/>d</span>
-                  <span t-else="" class="stocksense-badge-ok">Active</span>
+                  <span t-if="row.stale and row.days_idle === null" class="ss-badge ss-badge-danger">Never moved</span>
+                  <span t-elif="row.stale" class="ss-badge ss-badge-danger">Idle <t t-esc="row.days_idle"/>d</span>
+                  <span t-else="" class="ss-badge ss-badge-success">Active</span>
                 </td>
               </tr>
             </t>
@@ -115,109 +123,118 @@
         </table>
 
         <div t-if="state.transferSuggestions.length" class="mt-3">
-          <h5>Transfer Suggestions</h5>
+          <div class="ss-card-title"><i class="fa fa-exchange"/> Transfer Suggestions</div>
           <t t-foreach="state.transferSuggestions" t-as="sug" t-key="sug_index">
-            <p class="alert alert-info py-2">
+            <div class="ss-badge ss-badge-primary mb-2" style="display:block; white-space:normal; padding:10px 14px;">
               <strong t-esc="sug.product"/>: move <t t-esc="sug.suggested_qty"/> from
               <t t-esc="sug.from_location"/> to <t t-esc="sug.to_location"/>.
-              <br/><small t-esc="sug.reason"/>
-            </p>
+              <div class="ss-hint" t-esc="sug.reason"/>
+            </div>
           </t>
         </div>
-        <p t-else="" class="text-muted">No location imbalance detected — no transfers suggested right now.</p>
+        <p t-else="" class="ss-muted">No location imbalance detected — no transfers suggested right now.</p>
       </div>
 
-      <div class="d-flex stocksense-filters mb-3">
-        <input type="text" class="form-control me-2" placeholder="Search by name, SKU, category, or location..."
-               t-on-input="onSearchInput"/>
-        <select class="form-select" t-on-change="onCategoryChange">
-          <option value="all">All Categories</option>
-          <t t-foreach="state.categories" t-as="cat" t-key="cat.id">
-            <option t-att-value="cat.id" t-esc="cat.name"/>
-          </t>
-        </select>
-      </div>
+      <div class="ss-card">
+        <div class="ss-filters">
+          <div class="ss-search-wrap">
+            <i class="fa fa-search"/>
+            <input type="text" class="ss-input" placeholder="Search by name, SKU, category, or location..."
+                   t-on-input="onSearchInput"/>
+          </div>
+          <select class="ss-select" t-on-change="onCategoryChange">
+            <option value="all">All Categories</option>
+            <t t-foreach="state.categories" t-as="cat" t-key="cat.id">
+              <option t-att-value="cat.id" t-esc="cat.name"/>
+            </t>
+          </select>
+        </div>
 
-      <table class="table table-sm stocksense-products-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>SKU</th>
-            <th>Category</th>
-            <th>Location(s)</th>
-            <th>Qty</th>
-            <th>Expiry</th>
-            <th>Reorder Signal</th>
-            <th>Physical Count</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <t t-foreach="state.products" t-as="product" t-key="product.id">
-            <tr t-att-class="product.reorder.alert ? 'stocksense-row-alert' : ''">
-              <td t-esc="product.name"/>
-              <td t-esc="product.sku"/>
-              <td t-esc="product.category"/>
-              <td t-esc="product.locations"/>
-              <td>
-                <span t-esc="product.qty_available"/> <span t-esc="product.uom"/>
-                <div t-if="product.movement.stale" class="stocksense-suggest">
-                  <t t-if="product.movement.days_idle === null">Never moved</t>
-                  <t t-else="">Idle <t t-esc="product.movement.days_idle"/>d</t>
-                </div>
-              </td>
-              <td>
-                <span t-if="product.expiry.nearest_expiry === '-'">-</span>
-                <span t-else="" t-att-class="product.expiry.is_expired ? 'stocksense-badge-danger' : 'stocksense-badge-ok'">
-                  <t t-esc="product.expiry.nearest_expiry"/>
-                </span>
-              </td>
-              <td>
-                <t t-if="product.reorder.days_left !== null">
-                  <span t-att-class="product.reorder.alert ? 'stocksense-badge-danger' : 'stocksense-badge-ok'">
-                    <t t-esc="product.reorder.days_left"/> days left
-                  </span>
-                  <div t-if="product.reorder.alert" class="stocksense-suggest">
-                    Suggest reorder: <t t-esc="product.reorder.suggested_reorder_qty"/> <t t-esc="product.uom"/>
-                  </div>
-                </t>
-                <t t-else="">
-                  <span t-if="product.reorder.alert" class="stocksense-badge-danger">Out of stock</span>
-                  <span t-else="" class="stocksense-badge-ok">No recent usage</span>
-                </t>
-              </td>
-              <td>
-                <input type="number" class="form-control form-control-sm stocksense-count-input"
-                       t-att-value="state.counts[product.id]"
-                       t-on-input="(ev) => this.onCountInput(product.id, ev)"/>
-                <div t-if="countDiff(product) !== null" class="stocksense-diff"
-                     t-att-class="countDiff(product) !== 0 ? 'stocksense-diff-mismatch' : 'stocksense-diff-ok'">
-                  Diff: <t t-esc="countDiff(product)"/>
-                </div>
-                <button class="btn btn-sm btn-outline-primary mt-1" t-on-click="() => this.onApplyCount(product)">
-                  Apply Count
-                </button>
-              </td>
-              <td class="stocksense-actions">
-                <input type="number" class="form-control form-control-sm stocksense-qty-input"
-                       t-att-value="state.qty[product.id]"
-                       t-on-input="(ev) => this.onQtyInput(product.id, ev)"/>
-                <button class="btn btn-sm btn-success" t-on-click="() => this.onQuickAdd(product.id)">+</button>
-                <button class="btn btn-sm btn-warning" t-on-click="() => this.onQuickRemove(product.id)">-</button>
-                <button class="btn btn-sm btn-danger" t-on-click="() => this.onReportDamage(product.id)">Damage</button>
-                <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.onViewHistory(product)">History</button>
-              </td>
+        <div style="overflow-x: auto;">
+        <table class="ss-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Category</th>
+              <th>Location(s)</th>
+              <th>Qty</th>
+              <th>Expiry</th>
+              <th>Reorder Signal</th>
+              <th>Physical Count</th>
+              <th>Actions</th>
             </tr>
-          </t>
-        </tbody>
-      </table>
-
-      <div t-if="state.timeline.productId" class="stocksense-timeline-panel mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h4 t-esc="'History: ' + state.timeline.productName"/>
-          <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.closeTimeline()">Close</button>
+          </thead>
+          <tbody>
+            <t t-foreach="state.products" t-as="product" t-key="product.id">
+              <tr t-att-class="product.reorder.alert ? 'ss-row-alert' : ''">
+                <td><strong t-esc="product.name"/></td>
+                <td t-esc="product.sku"/>
+                <td t-esc="product.category"/>
+                <td t-esc="product.locations"/>
+                <td>
+                  <span t-esc="product.qty_available"/> <span t-esc="product.uom"/>
+                  <div t-if="product.movement.stale" class="ss-hint ss-hint-danger">
+                    <t t-if="product.movement.days_idle === null">Never moved</t>
+                    <t t-else="">Idle <t t-esc="product.movement.days_idle"/>d</t>
+                  </div>
+                </td>
+                <td>
+                  <span t-if="product.expiry.nearest_expiry === '-'" class="ss-muted">-</span>
+                  <span t-else="" t-att-class="'ss-badge ' + (product.expiry.is_expired ? 'ss-badge-danger' : 'ss-badge-success')">
+                    <t t-esc="product.expiry.nearest_expiry"/>
+                  </span>
+                </td>
+                <td>
+                  <t t-if="product.reorder.days_left !== null">
+                    <span t-att-class="'ss-badge ' + (product.reorder.alert ? 'ss-badge-danger' : 'ss-badge-success')">
+                      <t t-esc="product.reorder.days_left"/> days left
+                    </span>
+                    <div t-if="product.reorder.alert" class="ss-hint ss-hint-danger">
+                      Suggest reorder: <t t-esc="product.reorder.suggested_reorder_qty"/> <t t-esc="product.uom"/>
+                    </div>
+                  </t>
+                  <t t-else="">
+                    <span t-if="product.reorder.alert" class="ss-badge ss-badge-danger">Out of stock</span>
+                    <span t-else="" class="ss-badge ss-badge-neutral">No recent usage</span>
+                  </t>
+                </td>
+                <td>
+                  <input type="number" class="ss-mini-input"
+                         t-att-value="state.counts[product.id]"
+                         t-on-input="(ev) => this.onCountInput(product.id, ev)"/>
+                  <div t-if="countDiff(product) !== null" class="ss-hint"
+                       t-att-class="countDiff(product) !== 0 ? 'ss-hint-danger' : 'ss-hint-success'">
+                    Diff: <t t-esc="countDiff(product)"/>
+                  </div>
+                  <button class="ss-btn ss-btn-outline ss-btn-sm mt-1" t-on-click="() => this.onApplyCount(product)">
+                    Apply Count
+                  </button>
+                </td>
+                <td>
+                  <div class="ss-row-actions">
+                    <input type="number" class="ss-mini-input"
+                           t-att-value="state.qty[product.id]"
+                           t-on-input="(ev) => this.onQtyInput(product.id, ev)"/>
+                    <button class="ss-btn ss-btn-success ss-btn-sm" t-on-click="() => this.onQuickAdd(product.id)"><i class="fa fa-plus"/></button>
+                    <button class="ss-btn ss-btn-warning ss-btn-sm" t-on-click="() => this.onQuickRemove(product.id)"><i class="fa fa-minus"/></button>
+                    <button class="ss-btn ss-btn-danger ss-btn-sm" t-on-click="() => this.onReportDamage(product.id)"><i class="fa fa-exclamation-triangle"/> Damage</button>
+                    <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.onViewHistory(product)"><i class="fa fa-history"/> History</button>
+                  </div>
+                </td>
+              </tr>
+            </t>
+          </tbody>
+        </table>
         </div>
-        <table class="table table-sm">
+      </div>
+
+      <div t-if="state.timeline.productId" class="ss-panel">
+        <div class="ss-panel-header">
+          <h4><i class="fa fa-history"/> History: <t t-esc="state.timeline.productName"/></h4>
+          <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.closeTimeline()">Close</button>
+        </div>
+        <table class="ss-table">
           <thead>
             <tr><th>Date</th><th>Reference</th><th>From</th><th>To</th><th>Qty</th></tr>
           </thead>
