@@ -179,8 +179,7 @@ class StockSenseProductIntel(models.AbstractModel):
 
     @api.model
     def quick_adjust(self, product_id, delta):
-        """One-tap stock update / damage-wastage button both call this:
-        positive delta = quick add, negative delta = quick remove or damage."""
+        """One-tap stock update: positive delta = quick add, negative delta = quick remove."""
         product = self.env["product.product"].browse(product_id)
         location = self._get_primary_location(product)
         quant = self.env["stock.quant"]._gather(product, location, strict=True)

@@ -18,7 +18,7 @@ Built as a custom Odoo 17 addon (`addons/stocksense`) on top of Odoo's native `s
 - **Product Intelligence** (`models/product_intel.py` + `static/src/js/products.js`) — one screen combining:
   - Smart search (name, SKU, category, or location)
   - Full movement timeline per product
-  - One-tap stock adjust and damage/wastage reporting
+  - One-tap stock adjust
   - Velocity-based reorder suggestions (real math over 30-day move history, not a fixed threshold)
   - Physical-count vs system-count mismatch detection, applied live
   - Stale/idle stock flagging (no movement in 14+ days, or never moved)

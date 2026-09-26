@@ -100,12 +100,6 @@ export class StockSenseProducts extends Component {
         await this.loadProducts();
     }
 
-    async onReportDamage(productId) {
-        const delta = -(this.state.qty[productId] || 0);
-        await this.orm.call("stocksense.product_intel", "quick_adjust", [productId, delta]);
-        await this.loadProducts();
-    }
-
     onCountInput(productId, ev) {
         const v = parseFloat(ev.target.value);
         this.state.counts[productId] = isNaN(v) ? "" : v;

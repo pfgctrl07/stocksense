@@ -322,7 +322,6 @@
                            t-on-input="(ev) => this.onQtyInput(product.id, ev)"/>
                     <button class="ss-btn ss-btn-success ss-btn-sm" t-on-click="() => this.onQuickAdd(product.id)"><i class="fa fa-plus"/></button>
                     <button class="ss-btn ss-btn-warning ss-btn-sm" t-on-click="() => this.onQuickRemove(product.id)"><i class="fa fa-minus"/></button>
-                    <button class="ss-btn ss-btn-danger ss-btn-sm" t-on-click="() => this.onReportDamage(product.id)"><i class="fa fa-exclamation-triangle"/> Damage</button>
                     <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.onViewHistory(product)"><i class="fa fa-history"/> History</button>
                     <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.openQr(product)"><i class="fa fa-qrcode"/> QR</button>
                     <t t-if="state.confirmRemoveId === product.id">
