@@ -58,6 +58,18 @@ Replayed the PDF's worked example via `scripts/demo_scenario.py` (Odoo ORM), ver
 - [x] Commit: "custom StockSense dashboard"
 - Verification method: used Chrome automation to actually log in, open the dashboard, and change a filter — confirmed correct KPI numbers, correct filtered table, zero console errors. Not just "no exception in the server log."
 
+### Phase 4.5 — Innovation features (Product Intelligence) ✅ DONE
+User requested 10 "innovation" ideas. Brutal scoping call made and stated upfront: built 7, deferred 3 to roadmap.
+- [x] Smart search — by product name, SKU, category, or location (verified: "rack" correctly finds only Steel Rods)
+- [x] Movement timeline — full chronological history per product, verified live
+- [x] One-tap stock update — qty input + / − buttons, verified live
+- [x] Damage/wastage button — same mechanism, semantically labeled
+- [x] Smart reorder suggestion — real velocity math (avg daily outflow over 30d → days-of-stock-left → suggested qty), not a fixed threshold. Verified: Steel Rods correctly shows 115.5 days left from 0.67/day outflow.
+- [x] Mismatch detection — physical count vs system qty, live diff calc in the browser (typed 70 against 77 → correctly showed "Diff: -7")
+- [x] Auto stock alerts — delivered as red row highlighting on this screen, not a separate notification system (explicit scope cut, stated upfront)
+- Deferred to roadmap, NOT built (stated upfront, not silently dropped): barcode/camera scanner, warehouse digital map + product locator, auto transfer suggestions between locations — all high-effort/high-demo-risk for time remaining
+- Commit: `1d2a4be`
+
 ### 3:30–4:00 — Auth flow
 - [ ] Confirm signup/login works (Odoo native)
 - [ ] Add password reset — real OTP if time allows (simple model: generate code, show in a controller/log for demo, verify, reset password); otherwise fall back to Odoo's built-in email reset and say "OTP" in the video is the code emailed
