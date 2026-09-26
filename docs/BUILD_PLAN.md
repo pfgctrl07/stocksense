@@ -29,26 +29,27 @@ Never cut: Receipt → Delivery → Internal Transfer → Adjustment core loop. 
 
 ## Timeline
 
-### 0:00–0:30 — Setup
-- [ ] Install/run Odoo (Docker is fastest: `docker run` odoo + postgres, or local pip env if already set up)
-- [ ] Scaffold custom addon: `odoo-bin scaffold stocksense addons/`
-- [ ] `git init`, first commit (empty scaffold), push to GitHub immediately — repo must exist early
-- [ ] Write a 5-line README stub (fill in properly at the end)
+### 0:00–0:30 — Setup ✅ DONE
+- [x] Odoo 17 + Postgres 15 via `docker-compose.yml`
+- [x] Scaffolded custom addon `addons/stocksense`
+- [x] `git init`, first commit, pushed to GitHub: https://github.com/pfgctrl07/stocksense
+- [x] README with architecture + run instructions
 
-### 0:30–1:30 — Demo data & core config
-- [ ] Enable `stock` app, create 1–2 warehouses, 2–3 locations (Main Store, Production Rack)
-- [ ] Create 8–10 demo products with categories, SKU, UoM (via UI or a data XML/CSV so it's reproducible)
-- [ ] Set initial stock for a few products (so dashboard isn't empty)
-- [ ] Commit: "demo data + warehouse config"
+### 0:30–1:30 — Demo data & core config ✅ DONE
+- [x] `stock` app installed via addon dependency; default warehouse (WH) + new "Production Rack" location
+- [x] 5 demo products (Steel Rods, Chairs, Wood Planks, Screws, Tables) with categories/SKU/UoM via `data/demo_data.xml` (reproducible, not manual clicks)
+- [x] Initial stock set on 3 products
+- [x] Commit: "demo data + warehouse config"
+- Bug caught & fixed: products defaulted to `type='consu'` (untracked) instead of `type='product'` (tracked) — silently produced zero stock everywhere until caught by scripting the scenario and checking actual quant rows, not just move state.
 
-### 1:30–2:30 — Core flows (walk the PS's own example scenario)
-Replay the PDF's worked example exactly — it becomes your demo script:
-- [ ] Receipt: receive 100 kg Steel → validate → stock +100
-- [ ] Internal Transfer: Main Store → Production Rack
-- [ ] Delivery: deliver 20 (finished goods) → validate → stock −20
-- [ ] Adjustment: 3 kg steel damaged → adjust → stock −3
-- [ ] Verify all 4 show up in Move History / stock ledger
-- [ ] Commit: "core inventory flows verified"
+### 1:30–2:30 — Core flows (walk the PS's own example scenario) ✅ DONE
+Replayed the PDF's worked example via `scripts/demo_scenario.py` (Odoo ORM), verified against real quant values, not just "no error thrown":
+- [x] Receipt: receive 100 kg Steel → validate → stock +100 (confirmed: 100.0)
+- [x] Internal Transfer: Main Store → Production Rack (50kg) → confirmed both sides (50.0 / 50.0)
+- [x] Delivery: deliver 20 → validate → stock −20 (confirmed: 30.0)
+- [x] Adjustment: 3 kg steel damaged → adjust → stock −3 (confirmed: 27.0)
+- [x] All 4 show up in Move History with correct locations/qty/state=done
+- [x] Commit: "core inventory flows verified"
 
 ### 2:30–3:30 — Custom Dashboard (the one real custom-code piece)
 - [ ] Build a dashboard view (simplest viable: QWeb template + a controller/model method computing counts) with KPIs:
