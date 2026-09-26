@@ -42,6 +42,7 @@ export class StockSenseProducts extends Component {
             },
             confirmRemoveId: null,
             removeStatus: "",
+            qrProduct: null,
         });
         this._searchTimeout = null;
         this.videoRef = useRef("scannerVideo");
@@ -313,6 +314,14 @@ export class StockSenseProducts extends Component {
             this.state.removeStatus = `"${result.name}" was archived (it has stock history, so it's hidden rather than deleted).`;
         }
         await this.loadProducts();
+    }
+
+    openQr(product) {
+        this.state.qrProduct = product;
+    }
+
+    closeQr() {
+        this.state.qrProduct = null;
     }
 }
 

@@ -54,6 +54,12 @@
             </div>
           </div>
 
+          <div t-if="state.newProduct.barcode" class="mb-3" style="text-align:center;">
+            <label class="ss-hint">QR Code Preview</label><br/>
+            <img t-att-src="'/report/barcode/QR/' + encodeURIComponent(state.newProduct.barcode) + '?width=120&amp;height=120'"
+                 style="border:1px solid var(--ss-border); border-radius:6px; padding:4px;"/>
+          </div>
+
           <div class="d-flex mb-2" style="gap: 8px;">
             <div style="flex:1;">
               <label class="ss-hint">Category</label>
@@ -97,6 +103,21 @@
           <button class="ss-btn ss-btn-primary" style="width:100%; justify-content:center;" t-on-click="() => this.submitNewProduct()">
             <i class="fa fa-check"/> Create Product
           </button>
+        </div>
+      </div>
+
+      <div t-if="state.qrProduct" class="ss-modal-overlay">
+        <div class="ss-modal" style="width:320px; text-align:center;">
+          <div class="ss-panel-header">
+            <h4><i class="fa fa-qrcode"/> Product QR</h4>
+            <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.closeQr()">Close</button>
+          </div>
+          <p class="ss-hint" style="margin-bottom:10px;"><t t-esc="state.qrProduct.name"/></p>
+          <img t-att-src="'/report/barcode/QR/' + encodeURIComponent(state.qrProduct.barcode || state.qrProduct.sku || String(state.qrProduct.id)) + '?width=200&amp;height=200'"
+               style="border:1px solid var(--ss-border); border-radius:6px; padding:8px;"/>
+          <p class="ss-hint mt-2">
+            Encodes: <t t-esc="state.qrProduct.barcode || state.qrProduct.sku || ('Product #' + state.qrProduct.id)"/>
+          </p>
         </div>
       </div>
 
@@ -303,6 +324,7 @@
                     <button class="ss-btn ss-btn-warning ss-btn-sm" t-on-click="() => this.onQuickRemove(product.id)"><i class="fa fa-minus"/></button>
                     <button class="ss-btn ss-btn-danger ss-btn-sm" t-on-click="() => this.onReportDamage(product.id)"><i class="fa fa-exclamation-triangle"/> Damage</button>
                     <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.onViewHistory(product)"><i class="fa fa-history"/> History</button>
+                    <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.openQr(product)"><i class="fa fa-qrcode"/> QR</button>
                     <t t-if="state.confirmRemoveId === product.id">
                       <span class="ss-hint ss-hint-danger">Remove permanently?</span>
                       <button class="ss-btn ss-btn-danger ss-btn-sm" t-on-click="() => this.confirmRemoveProduct(product.id)">Yes, remove</button>
