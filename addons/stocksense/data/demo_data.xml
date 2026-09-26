@@ -1,4 +1,8 @@
-<odoo>
+<odoo noupdate="1">
+    <!-- noupdate=1: this is seed/reference data, not config. Without it, re-running
+         `-u stocksense` on a DB that already has these quants crashes with
+         "Quant's editing is restricted" since Odoo blocks direct writes to
+         existing stock.quant records outside the normal stock-move flow. -->
     <!-- Categories -->
     <record id="category_raw_materials" model="product.category">
         <field name="name">Raw Materials</field>
