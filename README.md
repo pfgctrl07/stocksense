@@ -24,6 +24,8 @@ Built as a custom Odoo 17 addon (`addons/stocksense`) on top of Odoo's native `s
   - Stale/idle stock flagging (no movement in 14+ days, or never moved)
   - End-of-day summary (received/delivered today, current qty, idle status, per product)
   - Simple location-imbalance transfer suggestions (explainable heuristic, not a full optimizer)
+  - **Barcode/camera scanning** — uses the browser-native `BarcodeDetector` API (no external library/CDN dependency) to scan a product's barcode and look it up instantly; falls back to manual barcode entry if the browser doesn't support it or camera access is denied
+  - **Warehouse space optimization** — every storage slot has a 3-number Cartesian address (floor X, floor Y, height Z, via `stock.location` fields `ss_x`/`ss_y`/`ss_z`); the optimizer ranks products by real sales velocity and suggests placing the fastest-moving items in the most accessible slots (lowest height, closest to origin) — an explainable ranking heuristic, not a full bin-packing optimizer
 - **OTP password reset** (`models/otp.py` + `controllers/auth.py` + `views/auth_templates.xml`) — real 6-digit OTP generation, single-use, 10-minute expiry, hooked into the actual login page's "Reset Password" link. OTP delivery is simulated (shown on-screen, labeled "demo mode") since no SMS/email provider is configured — the OTP logic itself is real.
 
 ## Running locally
@@ -54,9 +56,8 @@ docker compose exec -T odoo odoo shell -d stocksense --db_host=db --db_user=odoo
 Built and working: everything listed under "Custom" above, plus the full native Odoo inventory flow.
 
 Deliberately not built, given the time constraint of this build (documented honestly rather than silently dropped):
-- Barcode/camera-based scanning
-- Warehouse digital map / visual product locator
-- A real transfer-optimization engine (the current version is a simple explainable heuristic)
+- Warehouse digital map / visual floor-plan rendering (the coordinate system exists and is used by the optimizer; a graphical map on top of it does not)
+- A real transfer-optimization / bin-packing engine (both the transfer suggestions and the space optimizer use explainable ranking heuristics, not true optimization)
 
 ## Problem Statement
 
