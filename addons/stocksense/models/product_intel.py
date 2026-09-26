@@ -89,6 +89,31 @@ class StockSenseProductIntel(models.AbstractModel):
         }
 
     @api.model
+    def _product_row(self, p):
+        quants = self.env["stock.quant"].search([
+            ("product_id", "=", p.id),
+            ("quantity", ">", 0),
+            ("location_id.usage", "=", "internal"),
+        ])
+        locations = quants.mapped("location_id.complete_name")
+        primary_location = self._get_primary_location(p)
+        return {
+            "id": p.id,
+            "name": p.name,
+            "sku": p.default_code or "",
+            "barcode": p.barcode or "",
+            "category": p.categ_id.name,
+            "locations": ", ".join(locations) if locations else "—",
+            "qty_available": p.qty_available,
+            "uom": p.uom_id.name,
+            "reorder": self._reorder_signal(p),
+            "primary_location_id": primary_location.id,
+            "primary_location_name": primary_location.complete_name,
+            "expiry": self._expiry_info(p),
+            "movement": self._movement_info(p),
+        }
+
+    @api.model
     def search_products(self, query=None, category_id=None):
         domain = [("type", "=", "product")]
         if category_id:
@@ -104,6 +129,8 @@ class StockSenseProductIntel(models.AbstractModel):
                     return True
                 if q in (p.default_code or "").lower():
                     return True
+                if q in (p.barcode or "").lower():
+                    return True
                 if q in (p.categ_id.name or "").lower():
                     return True
                 quants = self.env["stock.quant"].search([
@@ -114,31 +141,16 @@ class StockSenseProductIntel(models.AbstractModel):
 
             products = products.filtered(matches)
 
-        result = []
-        for p in products:
-            quants = self.env["stock.quant"].search([
-                ("product_id", "=", p.id),
-                ("quantity", ">", 0),
-                ("location_id.usage", "=", "internal"),
-            ])
-            locations = quants.mapped("location_id.complete_name")
-            signal = self._reorder_signal(p)
-            primary_location = self._get_primary_location(p)
-            result.append({
-                "id": p.id,
-                "name": p.name,
-                "sku": p.default_code or "",
-                "category": p.categ_id.name,
-                "locations": ", ".join(locations) if locations else "—",
-                "qty_available": p.qty_available,
-                "uom": p.uom_id.name,
-                "reorder": signal,
-                "primary_location_id": primary_location.id,
-                "primary_location_name": primary_location.complete_name,
-                "expiry": self._expiry_info(p),
-                "movement": self._movement_info(p),
-            })
-        return result
+        return [self._product_row(p) for p in products]
+
+    @api.model
+    def lookup_by_barcode(self, barcode):
+        """Used by the camera/barcode scanner: exact match on the product's
+        barcode field. Returns None if nothing matches."""
+        product = self.env["product.product"].search([("barcode", "=", barcode)], limit=1)
+        if not product:
+            return None
+        return self._product_row(product)
 
     @api.model
     def get_product_timeline(self, product_id):
@@ -285,4 +297,65 @@ class StockSenseProductIntel(models.AbstractModel):
                             "reduce stockout risk at the smaller location."
                         ),
                     })
+        return suggestions
+
+    @api.model
+    def get_warehouse_layout(self):
+        """All addressable storage slots with their (x, y, z) Cartesian
+        address and whatever product currently occupies them, if any."""
+        slots = self.env["stock.location"].search([("ss_is_slot", "=", True)])
+        rows = []
+        for loc in slots:
+            quants = self.env["stock.quant"].search([
+                ("location_id", "=", loc.id),
+                ("quantity", ">", 0),
+            ], limit=1)
+            rows.append({
+                "location_id": loc.id,
+                "name": loc.name,
+                "x": loc.ss_x,
+                "y": loc.ss_y,
+                "z": loc.ss_z,
+                "occupant": quants.product_id.name if quants else None,
+            })
+        rows.sort(key=lambda r: (r["z"], r["x"] + r["y"]))
+        return rows
+
+    @api.model
+    def get_optimization_suggestions(self):
+        """Space optimization: highest-velocity products should sit in the
+        most accessible slots (low height first, then closest to origin).
+        This is an explainable ranking heuristic, not a real bin-packing
+        optimizer — it reuses the same velocity math as the reorder signal."""
+        products = self.env["product.product"].search([("type", "=", "product")])
+        products_with_stock = products.filtered(lambda p: p.qty_available > 0)
+
+        ranked_products = sorted(
+            products_with_stock,
+            key=lambda p: self._reorder_signal(p)["avg_daily_outflow"],
+            reverse=True,
+        )
+
+        slots = self.env["stock.location"].search([("ss_is_slot", "=", True)])
+        ranked_slots = sorted(slots, key=lambda l: (l.ss_z, l.ss_x + l.ss_y))
+
+        suggestions = []
+        for product, slot in zip(ranked_products, ranked_slots):
+            velocity = self._reorder_signal(product)["avg_daily_outflow"]
+            current = self._get_primary_location(product)
+            if velocity > 0:
+                reason = (
+                    f"High-velocity item ({velocity:g}/day) — placed at height "
+                    f"{slot.ss_z} for fast access."
+                )
+            else:
+                reason = "Low/no recent movement — placed further from the access point to free up prime slots."
+            suggestions.append({
+                "product": product.name,
+                "velocity": velocity,
+                "current_location": current.complete_name,
+                "suggested_slot": slot.name,
+                "suggested_coordinate": f"({slot.ss_x}, {slot.ss_y}, {slot.ss_z})",
+                "reason": reason,
+            })
         return suggestions

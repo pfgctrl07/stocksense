@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, useRef, onWillStart, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
@@ -20,14 +20,26 @@ export class StockSenseProducts extends Component {
             showSummary: false,
             summary: { date: "", total_received_today: 0, total_delivered_today: 0, products: [] },
             transferSuggestions: [],
+            showLayout: false,
+            layout: [],
+            optimization: [],
+            showScanner: false,
+            scannerSupported: "BarcodeDetector" in window,
+            scanStatus: "",
+            manualBarcode: "",
         });
         this._searchTimeout = null;
+        this.videoRef = useRef("scannerVideo");
+        this._scanLoopHandle = null;
+        this._mediaStream = null;
 
         onWillStart(async () => {
             const dashboardData = await this.orm.call("stocksense.dashboard", "get_filter_options", []);
             this.state.categories = dashboardData.categories;
             await this.loadProducts();
         });
+
+        onWillUnmount(() => this.stopScanner());
     }
 
     async loadProducts() {
@@ -122,6 +134,99 @@ export class StockSenseProducts extends Component {
                 "stocksense.product_intel", "get_transfer_suggestions", []
             );
         }
+    }
+
+    async toggleLayout() {
+        this.state.showLayout = !this.state.showLayout;
+        if (this.state.showLayout) {
+            this.state.layout = await this.orm.call("stocksense.product_intel", "get_warehouse_layout", []);
+            this.state.optimization = await this.orm.call(
+                "stocksense.product_intel", "get_optimization_suggestions", []
+            );
+        }
+    }
+
+    async openScanner() {
+        this.state.showScanner = true;
+        this.state.scanStatus = "";
+        if (!this.state.scannerSupported) {
+            return;
+        }
+        try {
+            this._mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        } catch (e) {
+            this.state.scanStatus = "Camera access denied or unavailable — use manual entry below.";
+            this.state.scannerSupported = false;
+            return;
+        }
+        // Video element only exists after the next render since it's behind showScanner.
+        setTimeout(() => {
+            if (this.videoRef.el) {
+                this.videoRef.el.srcObject = this._mediaStream;
+                this.videoRef.el.play();
+                this._runScanLoop();
+            }
+        }, 0);
+    }
+
+    _runScanLoop() {
+        const detector = new window.BarcodeDetector();
+        const scan = async () => {
+            if (!this.state.showScanner || !this.videoRef.el) {
+                return;
+            }
+            try {
+                const barcodes = await detector.detect(this.videoRef.el);
+                if (barcodes.length) {
+                    await this.handleScannedCode(barcodes[0].rawValue);
+                    return;
+                }
+            } catch (e) {
+                // keep trying — a frame with nothing decodable is normal, not an error
+            }
+            this._scanLoopHandle = requestAnimationFrame(scan);
+        };
+        this._scanLoopHandle = requestAnimationFrame(scan);
+    }
+
+    async handleScannedCode(code) {
+        this.state.scanStatus = `Scanned: ${code} — looking up...`;
+        const product = await this.orm.call("stocksense.product_intel", "lookup_by_barcode", [code]);
+        if (product) {
+            this.state.scanStatus = `Found: ${product.name}`;
+            this.state.query = product.name;
+            await this.loadProducts();
+            setTimeout(() => this.closeScanner(), 800);
+        } else {
+            this.state.scanStatus = `No product found for barcode ${code}.`;
+        }
+    }
+
+    onManualBarcodeInput(ev) {
+        this.state.manualBarcode = ev.target.value;
+    }
+
+    async onManualBarcodeSubmit() {
+        if (this.state.manualBarcode) {
+            await this.handleScannedCode(this.state.manualBarcode);
+        }
+    }
+
+    stopScanner() {
+        if (this._scanLoopHandle) {
+            cancelAnimationFrame(this._scanLoopHandle);
+            this._scanLoopHandle = null;
+        }
+        if (this._mediaStream) {
+            this._mediaStream.getTracks().forEach((t) => t.stop());
+            this._mediaStream = null;
+        }
+    }
+
+    closeScanner() {
+        this.stopScanner();
+        this.state.showScanner = false;
+        this.state.manualBarcode = "";
     }
 }
 

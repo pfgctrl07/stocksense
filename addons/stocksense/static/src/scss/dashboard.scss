@@ -112,4 +112,28 @@
         font-size: 13px;
         opacity: 0.85;
     }
+
+    .stocksense-scanner-modal {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+    }
+
+    .stocksense-scanner-box {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        width: 480px;
+        max-width: 90vw;
+    }
+
+    .stocksense-scanner-video {
+        width: 100%;
+        border-radius: 6px;
+        background: #000;
+    }
 }
