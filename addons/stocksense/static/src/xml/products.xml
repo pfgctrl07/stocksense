@@ -214,6 +214,10 @@
         <p t-else="" class="ss-muted">No location imbalance detected — no transfers suggested right now.</p>
       </div>
 
+      <p t-if="state.removeStatus" class="ss-badge ss-badge-primary mb-3" style="display:block; white-space:normal; padding:10px 14px;">
+        <t t-esc="state.removeStatus"/>
+      </p>
+
       <div class="ss-card">
         <div class="ss-filters">
           <div class="ss-search-wrap">
@@ -299,6 +303,12 @@
                     <button class="ss-btn ss-btn-warning ss-btn-sm" t-on-click="() => this.onQuickRemove(product.id)"><i class="fa fa-minus"/></button>
                     <button class="ss-btn ss-btn-danger ss-btn-sm" t-on-click="() => this.onReportDamage(product.id)"><i class="fa fa-exclamation-triangle"/> Damage</button>
                     <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.onViewHistory(product)"><i class="fa fa-history"/> History</button>
+                    <t t-if="state.confirmRemoveId === product.id">
+                      <span class="ss-hint ss-hint-danger">Remove permanently?</span>
+                      <button class="ss-btn ss-btn-danger ss-btn-sm" t-on-click="() => this.confirmRemoveProduct(product.id)">Yes, remove</button>
+                      <button class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.cancelRemoveProduct()">Cancel</button>
+                    </t>
+                    <button t-else="" class="ss-btn ss-btn-outline ss-btn-sm" t-on-click="() => this.askRemoveProduct(product.id)"><i class="fa fa-trash"/> Remove</button>
                   </div>
                 </td>
               </tr>

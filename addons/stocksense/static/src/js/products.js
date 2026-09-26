@@ -40,6 +40,8 @@ export class StockSenseProducts extends Component {
                 track_expiry: false,
                 expiration_days: 30,
             },
+            confirmRemoveId: null,
+            removeStatus: "",
         });
         this._searchTimeout = null;
         this.videoRef = useRef("scannerVideo");
@@ -291,6 +293,26 @@ export class StockSenseProducts extends Component {
         } catch (e) {
             this.state.addError = "Could not create product — check the details and try again.";
         }
+    }
+
+    askRemoveProduct(productId) {
+        this.state.confirmRemoveId = productId;
+        this.state.removeStatus = "";
+    }
+
+    cancelRemoveProduct() {
+        this.state.confirmRemoveId = null;
+    }
+
+    async confirmRemoveProduct(productId) {
+        const result = await this.orm.call("stocksense.product_intel", "remove_product", [productId]);
+        this.state.confirmRemoveId = null;
+        if (result.method === "deleted") {
+            this.state.removeStatus = `"${result.name}" was permanently deleted (no stock history existed).`;
+        } else if (result.method === "archived") {
+            this.state.removeStatus = `"${result.name}" was archived (it has stock history, so it's hidden rather than deleted).`;
+        }
+        await this.loadProducts();
     }
 }
 

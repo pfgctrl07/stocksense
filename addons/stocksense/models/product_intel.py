@@ -393,3 +393,31 @@ class StockSenseProductIntel(models.AbstractModel):
 
         template = self.env["product.template"].create(product_vals)
         return self._product_row(template.product_variant_id)
+
+    @api.model
+    def remove_product(self, product_id):
+        """Removes a product. A product that was never moved and holds no
+        stock is permanently deleted; anything with real history (a real
+        receipt/delivery/adjustment ever happened) is archived instead, so
+        past documents that reference it stay intact - Odoo would block a
+        hard delete in that case anyway."""
+        product = self.env["product.product"].browse(product_id)
+        if not product.exists():
+            return {"method": "not_found"}
+
+        name = product.name
+        has_moves = bool(self.env["stock.move.line"].search_count([
+            ("product_id", "=", product.id),
+        ]))
+        has_stock = bool(product.qty_available)
+
+        if not has_moves and not has_stock:
+            template = product.product_tmpl_id
+            product.unlink()
+            if not template.product_variant_ids:
+                template.unlink()
+            return {"method": "deleted", "name": name}
+
+        product.write({"active": False})
+        product.product_tmpl_id.write({"active": False})
+        return {"method": "archived", "name": name}
