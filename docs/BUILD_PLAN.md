@@ -51,12 +51,12 @@ Replayed the PDF's worked example via `scripts/demo_scenario.py` (Odoo ORM), ver
 - [x] All 4 show up in Move History with correct locations/qty/state=done
 - [x] Commit: "core inventory flows verified"
 
-### 2:30–3:30 — Custom Dashboard (the one real custom-code piece)
-- [ ] Build a dashboard view (simplest viable: QWeb template + a controller/model method computing counts) with KPIs:
-  Total Products in Stock, Low/Out of Stock, Pending Receipts, Pending Deliveries, Internal Transfers Scheduled
-- [ ] Add filters: document type, status (Draft/Waiting/Ready/Done/Canceled), warehouse/location, category
-  - If time-boxed: ship 2 of the 4 filters, note the rest as "next"
-- [ ] Commit: "custom StockSense dashboard"
+### 2:30–3:30 — Custom Dashboard (the one real custom-code piece) ✅ DONE
+- [x] Built as a real OWL component (`static/src/js/dashboard.js`) + backend model (`models/dashboard.py`), not native Odoo views — genuinely custom code, verified live in a browser (not just "compiles")
+- [x] KPIs: Total Products in Stock, Low/Out of Stock, Pending Receipts, Pending Deliveries, Internal Transfers Scheduled — all wired to real data, confirmed correct values on screen
+- [x] All 4 filters implemented and confirmed interactive: document type, status, warehouse, category
+- [x] Commit: "custom StockSense dashboard"
+- Verification method: used Chrome automation to actually log in, open the dashboard, and change a filter — confirmed correct KPI numbers, correct filtered table, zero console errors. Not just "no exception in the server log."
 
 ### 3:30–4:00 — Auth flow
 - [ ] Confirm signup/login works (Odoo native)
