@@ -4,7 +4,7 @@
     "summary": "Modular Inventory Management System — Odoo x NMIT Bangalore Hackathon '26",
     "category": "Inventory/Inventory",
     "author": "Team StockSense",
-    "depends": ["stock", "product", "web", "auth_signup"],
+    "depends": ["stock", "product", "web", "auth_signup", "product_expiry"],
     "data": [
         "security/ir.model.access.csv",
         "views/dashboard_views.xml",

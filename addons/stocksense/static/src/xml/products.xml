@@ -2,7 +2,59 @@
 <templates xml:space="preserve">
   <t t-name="stocksense.Products" owl="1">
     <div class="stocksense-products p-4">
-      <h2 class="mb-3">Product Intelligence</h2>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Product Intelligence</h2>
+        <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.toggleSummary()">
+          <t t-if="state.showSummary">Hide Daily Summary</t>
+          <t t-else="">Daily Summary</t>
+        </button>
+      </div>
+
+      <div t-if="state.showSummary" class="stocksense-summary-panel mb-4">
+        <h4>Daily Summary — <t t-esc="state.summary.date"/></h4>
+        <div class="d-flex stocksense-summary-totals mb-2">
+          <div class="stocksense-kpi-card">
+            <div class="stocksense-kpi-value" t-esc="state.summary.total_received_today"/>
+            <div class="stocksense-kpi-label">Received Today</div>
+          </div>
+          <div class="stocksense-kpi-card">
+            <div class="stocksense-kpi-value" t-esc="state.summary.total_delivered_today"/>
+            <div class="stocksense-kpi-label">Delivered Today</div>
+          </div>
+        </div>
+        <table class="table table-sm">
+          <thead>
+            <tr><th>Product</th><th>Received Today</th><th>Delivered Today</th><th>Current Qty</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <t t-foreach="state.summary.products" t-as="row" t-key="row.name">
+              <tr>
+                <td t-esc="row.name"/>
+                <td t-esc="row.received_today"/>
+                <td t-esc="row.delivered_today"/>
+                <td t-esc="row.current_qty"/>
+                <td>
+                  <span t-if="row.stale and row.days_idle === null" class="stocksense-badge-danger">Never moved</span>
+                  <span t-elif="row.stale" class="stocksense-badge-danger">Idle <t t-esc="row.days_idle"/>d</span>
+                  <span t-else="" class="stocksense-badge-ok">Active</span>
+                </td>
+              </tr>
+            </t>
+          </tbody>
+        </table>
+
+        <div t-if="state.transferSuggestions.length" class="mt-3">
+          <h5>Transfer Suggestions</h5>
+          <t t-foreach="state.transferSuggestions" t-as="sug" t-key="sug_index">
+            <p class="alert alert-info py-2">
+              <strong t-esc="sug.product"/>: move <t t-esc="sug.suggested_qty"/> from
+              <t t-esc="sug.from_location"/> to <t t-esc="sug.to_location"/>.
+              <br/><small t-esc="sug.reason"/>
+            </p>
+          </t>
+        </div>
+        <p t-else="" class="text-muted">No location imbalance detected — no transfers suggested right now.</p>
+      </div>
 
       <div class="d-flex stocksense-filters mb-3">
         <input type="text" class="form-control me-2" placeholder="Search by name, SKU, category, or location..."
@@ -23,6 +75,7 @@
             <th>Category</th>
             <th>Location(s)</th>
             <th>Qty</th>
+            <th>Expiry</th>
             <th>Reorder Signal</th>
             <th>Physical Count</th>
             <th>Actions</th>
@@ -37,6 +90,16 @@
               <td t-esc="product.locations"/>
               <td>
                 <span t-esc="product.qty_available"/> <span t-esc="product.uom"/>
+                <div t-if="product.movement.stale" class="stocksense-suggest">
+                  <t t-if="product.movement.days_idle === null">Never moved</t>
+                  <t t-else="">Idle <t t-esc="product.movement.days_idle"/>d</t>
+                </div>
+              </td>
+              <td>
+                <span t-if="product.expiry.nearest_expiry === '-'">-</span>
+                <span t-else="" t-att-class="product.expiry.is_expired ? 'stocksense-badge-danger' : 'stocksense-badge-ok'">
+                  <t t-esc="product.expiry.nearest_expiry"/>
+                </span>
               </td>
               <td>
                 <t t-if="product.reorder.days_left !== null">
@@ -81,7 +144,7 @@
       <div t-if="state.timeline.productId" class="stocksense-timeline-panel mt-4">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h4 t-esc="'History: ' + state.timeline.productName"/>
-          <button class="btn btn-sm btn-outline-secondary" t-on-click="closeTimeline">Close</button>
+          <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.closeTimeline()">Close</button>
         </div>
         <table class="table table-sm">
           <thead>

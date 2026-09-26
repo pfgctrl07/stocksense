@@ -17,6 +17,9 @@ export class StockSenseProducts extends Component {
             qty: {},
             counts: {},
             timeline: { productId: null, productName: "", entries: [] },
+            showSummary: false,
+            summary: { date: "", total_received_today: 0, total_delivered_today: 0, products: [] },
+            transferSuggestions: [],
         });
         this._searchTimeout = null;
 
@@ -109,6 +112,16 @@ export class StockSenseProducts extends Component {
 
     closeTimeline() {
         this.state.timeline = { productId: null, productName: "", entries: [] };
+    }
+
+    async toggleSummary() {
+        this.state.showSummary = !this.state.showSummary;
+        if (this.state.showSummary) {
+            this.state.summary = await this.orm.call("stocksense.product_intel", "get_daily_summary", []);
+            this.state.transferSuggestions = await this.orm.call(
+                "stocksense.product_intel", "get_transfer_suggestions", []
+            );
+        }
     }
 }
 

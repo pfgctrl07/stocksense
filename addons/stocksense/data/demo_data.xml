@@ -6,6 +6,9 @@
     <!-- Categories -->
     <record id="category_raw_materials" model="product.category">
         <field name="name">Raw Materials</field>
+        <!-- FEFO: for lot-tracked products in this category, the oldest/nearest-
+             to-expire batch is picked automatically on delivery -->
+        <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
     </record>
     <record id="category_finished_goods" model="product.category">
         <field name="name">Finished Goods</field>
@@ -48,6 +51,11 @@
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
         <field name="list_price">15.0</field>
+        <!-- Lot + expiry tracking: demonstrates FEFO removal (oldest/nearest-
+             expiring batch goes out first on delivery) -->
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date" eval="True"/>
+        <field name="expiration_time">30</field>
     </record>
 
     <record id="product_screws" model="product.template">
