@@ -3,4 +3,9 @@
         <field name="name">StockSense Dashboard</field>
         <field name="tag">stocksense.dashboard</field>
     </record>
+
+    <record id="action_stocksense_products" model="ir.actions.client">
+        <field name="name">Product Intelligence</field>
+        <field name="tag">stocksense.products</field>
+    </record>
 </odoo>

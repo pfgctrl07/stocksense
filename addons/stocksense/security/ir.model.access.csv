@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_stocksense_dashboard_user,stocksense.dashboard.user,model_stocksense_dashboard,base.group_user,1,0,0,0
+access_stocksense_product_intel_user,stocksense.product_intel.user,model_stocksense_product_intel,base.group_user,1,0,0,0

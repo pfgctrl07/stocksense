@@ -14,7 +14,9 @@
     "assets": {
         "web.assets_backend": [
             "stocksense/static/src/js/dashboard.js",
+            "stocksense/static/src/js/products.js",
             "stocksense/static/src/xml/dashboard.xml",
+            "stocksense/static/src/xml/products.xml",
             "stocksense/static/src/scss/dashboard.scss",
         ],
     },

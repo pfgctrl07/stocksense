@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="stocksense.Products" owl="1">
+    <div class="stocksense-products p-4">
+      <h2 class="mb-3">Product Intelligence</h2>
+
+      <div class="d-flex stocksense-filters mb-3">
+        <input type="text" class="form-control me-2" placeholder="Search by name, SKU, category, or location..."
+               t-on-input="onSearchInput"/>
+        <select class="form-select" t-on-change="onCategoryChange">
+          <option value="all">All Categories</option>
+          <t t-foreach="state.categories" t-as="cat" t-key="cat.id">
+            <option t-att-value="cat.id" t-esc="cat.name"/>
+          </t>
+        </select>
+      </div>
+
+      <table class="table table-sm stocksense-products-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>SKU</th>
+            <th>Category</th>
+            <th>Location(s)</th>
+            <th>Qty</th>
+            <th>Reorder Signal</th>
+            <th>Physical Count</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <t t-foreach="state.products" t-as="product" t-key="product.id">
+            <tr t-att-class="product.reorder.alert ? 'stocksense-row-alert' : ''">
+              <td t-esc="product.name"/>
+              <td t-esc="product.sku"/>
+              <td t-esc="product.category"/>
+              <td t-esc="product.locations"/>
+              <td>
+                <span t-esc="product.qty_available"/> <span t-esc="product.uom"/>
+              </td>
+              <td>
+                <t t-if="product.reorder.days_left !== null">
+                  <span t-att-class="product.reorder.alert ? 'stocksense-badge-danger' : 'stocksense-badge-ok'">
+                    <t t-esc="product.reorder.days_left"/> days left
+                  </span>
+                  <div t-if="product.reorder.alert" class="stocksense-suggest">
+                    Suggest reorder: <t t-esc="product.reorder.suggested_reorder_qty"/> <t t-esc="product.uom"/>
+                  </div>
+                </t>
+                <t t-else="">
+                  <span t-if="product.reorder.alert" class="stocksense-badge-danger">Out of stock</span>
+                  <span t-else="" class="stocksense-badge-ok">No recent usage</span>
+                </t>
+              </td>
+              <td>
+                <input type="number" class="form-control form-control-sm stocksense-count-input"
+                       t-att-value="state.counts[product.id]"
+                       t-on-input="(ev) => this.onCountInput(product.id, ev)"/>
+                <div t-if="countDiff(product) !== null" class="stocksense-diff"
+                     t-att-class="countDiff(product) !== 0 ? 'stocksense-diff-mismatch' : 'stocksense-diff-ok'">
+                  Diff: <t t-esc="countDiff(product)"/>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1" t-on-click="() => this.onApplyCount(product)">
+                  Apply Count
+                </button>
+              </td>
+              <td class="stocksense-actions">
+                <input type="number" class="form-control form-control-sm stocksense-qty-input"
+                       t-att-value="state.qty[product.id]"
+                       t-on-input="(ev) => this.onQtyInput(product.id, ev)"/>
+                <button class="btn btn-sm btn-success" t-on-click="() => this.onQuickAdd(product.id)">+</button>
+                <button class="btn btn-sm btn-warning" t-on-click="() => this.onQuickRemove(product.id)">-</button>
+                <button class="btn btn-sm btn-danger" t-on-click="() => this.onReportDamage(product.id)">Damage</button>
+                <button class="btn btn-sm btn-outline-secondary" t-on-click="() => this.onViewHistory(product)">History</button>
+              </td>
+            </tr>
+          </t>
+        </tbody>
+      </table>
+
+      <div t-if="state.timeline.productId" class="stocksense-timeline-panel mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 t-esc="'History: ' + state.timeline.productName"/>
+          <button class="btn btn-sm btn-outline-secondary" t-on-click="closeTimeline">Close</button>
+        </div>
+        <table class="table table-sm">
+          <thead>
+            <tr><th>Date</th><th>Reference</th><th>From</th><th>To</th><th>Qty</th></tr>
+          </thead>
+          <tbody>
+            <t t-foreach="state.timeline.entries" t-as="entry" t-key="entry_index">
+              <tr>
+                <td t-esc="entry.date"/>
+                <td t-esc="entry.reference"/>
+                <td t-esc="entry.from_location"/>
+                <td t-esc="entry.to_location"/>
+                <td t-esc="entry.qty"/>
+              </tr>
+            </t>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </t>
+</templates>

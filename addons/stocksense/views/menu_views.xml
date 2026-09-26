@@ -10,6 +10,12 @@
               action="action_stocksense_dashboard"
               sequence="5"/>
 
+    <menuitem id="menu_stocksense_products"
+              name="Products"
+              parent="menu_stocksense_root"
+              action="action_stocksense_products"
+              sequence="8"/>
+
     <menuitem id="menu_stocksense_operations"
               name="Operations"
               parent="menu_stocksense_root"
