@@ -1,0 +1,82 @@
+<odoo>
+    <!-- Categories -->
+    <record id="category_raw_materials" model="product.category">
+        <field name="name">Raw Materials</field>
+    </record>
+    <record id="category_finished_goods" model="product.category">
+        <field name="name">Finished Goods</field>
+    </record>
+
+    <!-- Second location: used to demo Internal Transfers -->
+    <record id="location_production_rack" model="stock.location">
+        <field name="name">Production Rack</field>
+        <field name="usage">internal</field>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+    </record>
+
+    <!-- Products matching the PS worked example -->
+    <record id="product_steel" model="product.template">
+        <field name="name">Steel Rods</field>
+        <field name="default_code">STL-001</field>
+        <field name="categ_id" ref="category_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_kgm"/>
+        <field name="uom_po_id" ref="uom.product_uom_kgm"/>
+        <field name="list_price">50.0</field>
+    </record>
+
+    <record id="product_chairs" model="product.template">
+        <field name="name">Chairs</field>
+        <field name="default_code">CHR-001</field>
+        <field name="categ_id" ref="category_finished_goods"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="list_price">1200.0</field>
+    </record>
+
+    <!-- A few extra products so the dashboard/list views aren't empty -->
+    <record id="product_wood_planks" model="product.template">
+        <field name="name">Wood Planks</field>
+        <field name="default_code">WPL-001</field>
+        <field name="categ_id" ref="category_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="list_price">15.0</field>
+    </record>
+
+    <record id="product_screws" model="product.template">
+        <field name="name">Screws (box of 100)</field>
+        <field name="default_code">SCR-001</field>
+        <field name="categ_id" ref="category_raw_materials"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="list_price">5.0</field>
+    </record>
+
+    <record id="product_tables" model="product.template">
+        <field name="name">Tables</field>
+        <field name="default_code">TBL-001</field>
+        <field name="categ_id" ref="category_finished_goods"/>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="list_price">3000.0</field>
+    </record>
+
+    <!-- Initial stock so the dashboard isn't empty at first login -->
+    <record id="quant_wood_planks" model="stock.quant">
+        <field name="product_id" ref="product_wood_planks"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="quantity">200</field>
+    </record>
+
+    <record id="quant_screws" model="stock.quant">
+        <field name="product_id" ref="product_screws"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="quantity">5</field>
+    </record>
+
+    <record id="quant_tables" model="stock.quant">
+        <field name="product_id" ref="product_tables"/>
+        <field name="location_id" ref="stock.stock_location_stock"/>
+        <field name="quantity">12</field>
+    </record>
+</odoo>

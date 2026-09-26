@@ -9,6 +9,7 @@
         "security/ir.model.access.csv",
         "views/dashboard_views.xml",
         "views/menu_views.xml",
+        "data/demo_data.xml",
     ],
     "installable": True,
     "application": True,
