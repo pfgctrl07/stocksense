@@ -1,0 +1,11 @@
+<odoo>
+    <menuitem id="menu_stocksense_root"
+              name="StockSense"
+              sequence="5"/>
+
+    <menuitem id="menu_stocksense_operations"
+              name="Operations"
+              parent="menu_stocksense_root"
+              action="stock.stock_picking_type_action"
+              sequence="10"/>
+</odoo>
