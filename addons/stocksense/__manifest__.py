@@ -11,6 +11,13 @@
         "views/menu_views.xml",
         "data/demo_data.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "stocksense/static/src/js/dashboard.js",
+            "stocksense/static/src/xml/dashboard.xml",
+            "stocksense/static/src/scss/dashboard.scss",
+        ],
+    },
     "installable": True,
     "application": True,
     "license": "LGPL-3",
